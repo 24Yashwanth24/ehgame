@@ -1,11 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import "./App.css";
 
-/**
- * Generates an array of levels with a snaky, uneven layout.
- * x steadily increases while y fluctuates (drastically, up to ±150px)
- * to create noticeable hills and valleys.
- */
+// Function to generate levels
 function generateLevels(n) {
   const levelsArr = [];
   let x = 50;
@@ -25,10 +21,7 @@ function generateLevels(n) {
   return levelsArr;
 }
 
-/**
- * Converts an array of points to a smooth, continuous SVG path
- * using cubic Bézier curves. We use a curveFactor of 1/3 for smoother curves.
- */
+// Function to get curved path
 function getCurvedPath(points) {
   if (points.length < 2) return "";
 
@@ -51,9 +44,7 @@ function getCurvedPath(points) {
   return d;
 }
 
-/**
- * Helper function to format milliseconds into mm:ss format.
- */
+// Function to format time
 function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -66,6 +57,13 @@ function formatTime(ms) {
 function App() {
   const levels = useMemo(() => generateLevels(10), []);
   const [currentLevel, setCurrentLevel] = useState(1);
+  
+  // Registration state
+  const [username, setUsername] = useState("");
+  const [rollNo, setRollNo] = useState("");
+  const [department, setDepartment] = useState("");
+  const [year, setYear] = useState("");
+  const [registrationComplete, setRegistrationComplete] = useState(false);
   
   // Quiz state
   const [quizActive, setQuizActive] = useState(false);
@@ -113,6 +111,14 @@ function App() {
     setElapsedTime(0);
   };
   
+  // Handle registration form submission
+  const handleRegistrationSubmit = (e) => {
+    e.preventDefault();
+    if (username && rollNo && department && year) {
+      setRegistrationComplete(true);
+    }
+  };
+
   // Set up a ticking interval for the stopwatch (updates every second).
   useEffect(() => {
     let interval = null;
@@ -169,7 +175,7 @@ function App() {
     setTimeTaken(elapsed);
     setGameCompleted(true);
   };
-  
+
   // Show Game Over if triggered.
   if (gameOver) {
     return (
@@ -180,6 +186,7 @@ function App() {
     );
   }
   
+
   // Final screen after game completion shows total time taken.
   if (gameCompleted) {
     const totalSeconds = Math.floor(timeTaken / 1000);
@@ -230,6 +237,58 @@ function App() {
   // Position the player icon based on the current level.
   const playerPosition = levels[currentLevel - 1] || levels[0];
   
+  // Show Registration Form if not completed
+  if (!registrationComplete) {
+    return (
+      <div className="registration-form">
+        <h1>Registration</h1>
+        <form onSubmit={handleRegistrationSubmit}>
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Enter Your Roll No"
+            value={rollNo}
+            onChange={(e) => setRollNo(e.target.value)}
+            required
+          />
+          <select
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            required
+          >
+            <option value="">Select Department</option>
+            <option value="Ece">ECE</option>
+            <option value="Cse">CSE</option>
+            <option value="Csm">CSM</option>
+            <option value="Csd">CSD</option>
+            <option value="Csc">CSC</option>
+            <option value="Eee">EEE</option>
+            <option value="Mec">Mech</option>
+            <option value="Civ">Civil</option>
+          </select>
+          <select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            required
+          >
+            <option value="">Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="map-container" ref={containerRef}>
       {/* Show Stopwatch Box only after game has started */}
@@ -245,6 +304,8 @@ function App() {
           <div className="start-game-content">
             <h1>Welcome to the Quiz Game</h1>
             <p>Please click the button below to enter full screen and start.</p>
+            <i style={{color:'red',fontSize:'20px',fontWeight:'bold'}}><u>Don't press Esc,you will get eliminated if you exit full screen mode</u></i>
+            <br></br>
             <button onClick={startGame}>Enter Full Screen</button>
           </div>
         </div>
