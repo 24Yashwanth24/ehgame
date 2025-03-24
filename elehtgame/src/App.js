@@ -81,6 +81,9 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0); // updated every second
   const [timeTaken, setTimeTaken] = useState(null);
   
+  // Warning modal state
+  const [showExitWarning, setShowExitWarning] = useState(false);
+  
   // Hard-coded questions (one question per level)
   const questions = [
     { question: "What is 2+2?", answer: "4" },
@@ -147,12 +150,17 @@ function App() {
       if (e.keyCode === 123) e.preventDefault(); // F12
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "I" || e.key === "J")) e.preventDefault();
       if ((e.ctrlKey || e.metaKey) && e.key === "u") e.preventDefault();
+      
+      // Show warning modal if Esc is pressed while in full-screen
+      if (e.key === "Escape" && document.fullscreenElement) {
+        e.preventDefault(); // Prevent the default exit action
+        setShowExitWarning(true);
+      }
     };
     
     const handleFullscreenChange = () => {
       if (gameStarted && !document.fullscreenElement) {
-        alert("Game Over. You exited full-screen mode!");
-        setGameOver(true);
+        setShowExitWarning(true); // Show warning modal
       }
     };
     
@@ -186,7 +194,6 @@ function App() {
     );
   }
   
-
   // Final screen after game completion shows total time taken.
   if (gameCompleted) {
     const totalSeconds = Math.floor(timeTaken / 1000);
@@ -304,7 +311,7 @@ function App() {
           <div className="start-game-content">
             <h1>Welcome to the Quiz Game</h1>
             <p>Please click the button below to enter full screen and start.</p>
-            <i style={{color:'red',fontSize:'20px',fontWeight:'bold'}}><u>Don't press Esc,you will get eliminated if you exit full screen mode</u></i>
+            <i style={{color:'red',fontSize:'20px',fontWeight:'bold'}}><u>Warning: Exiting full screen mode will prompt a warning and may lead to disqualification.</u></i>
             <br></br>
             <button onClick={startGame}>Enter Full Screen</button>
           </div>
@@ -386,6 +393,23 @@ function App() {
             </div>
           )}
         </>
+      )}
+
+      {/* Exit Warning Modal */}
+      {showExitWarning && (
+        <div className="exit-warning-modal">
+          <div className="exit-warning-content">
+            <h2>⚠️ Warning!</h2>
+            <p>Exiting full screen will disqualify you. Are you sure you want to quit?</p>
+            <button onClick={() => setGameOver(true)}>Yes, Quit</button>
+            <button onClick={() => {
+              if (containerRef.current.requestFullscreen) {
+                containerRef.current.requestFullscreen();
+              }
+              setShowExitWarning(false);
+            }}>No, Resume Game</button>
+          </div>
+        </div>
       )}
     </div>
   );
