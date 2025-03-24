@@ -1,0 +1,187 @@
+/* General container styling */
+.map-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #222;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Stopwatch Box (fixed at top right) */
+.stopwatch-box {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  color: #222;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 150;
+}
+
+/* Start Game Overlay (covers entire screen until game starts) */
+.start-game-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  color: #fff;
+}
+
+.start-game-content {
+  text-align: center;
+}
+
+.start-game-content button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+/* Main Map Area */
+.map {
+  position: relative;
+  width: 1600px;
+  height: 600px;
+  margin: 40px auto;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+    url("https://via.placeholder.com/1600x600.png?text=Treasure+Hunt+Map")
+    no-repeat center center;
+  background-size: cover;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Level Nodes styling */
+.level-node {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  line-height: 40px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 10;
+  background-color: #fff;
+  border: 2px solid #aaa;
+}
+
+.level-node.unlocked {
+  border-color: #FFA500;
+  color: #FFA500;
+}
+
+.level-node.locked {
+  border-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.level-node.current {
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 10px 5px rgba(255,165,0,0.75);
+}
+
+.level-node:hover {
+  transform: scale(1.1);
+}
+
+/* SVG dashed path placed behind the nodes */
+.path-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1600px;
+  height: 600px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Player Icon styling */
+.player-icon {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  transition: left 1s ease, top 1s ease;
+  z-index: 100;
+}
+
+.player-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Quiz Modal Styling */
+.quiz-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.quiz-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.quiz-content input {
+  padding: 8px;
+  width: 80%;
+  margin: 10px 0;
+}
+
+.quiz-content button {
+  padding: 8px 16px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* Game Over / Final Screen styling */
+.game-over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #222;
+  color: #fff;
+  text-align: center;
+}
+
+/* Keyframes for pulsing effect */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px 5px rgba(255,165,0,0.75);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px 7px rgba(255,165,0,0.75);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px 5px rgba(255,165,0,0.75);
+  }
+}
