@@ -3,14 +3,15 @@ import Sketch from "react-p5";
 
 const Breadboard = () => {
   const [components, setComponents] = useState([
-    { id: 1, type: "resistor", x: 100, y: 400 },
-    { id: 2, type: "led", x: 200, y: 400 },
+    { id: 1, type: "resistor", x: 100, y: 400, rotated: false },
+    { id: 2, type: "led", x: 200, y: 400, rotated: false },
   ]);
   const [wires, setWires] = useState([]);
   const [currentWire, setCurrentWire] = useState(null);
   const [selectedColor, setSelectedColor] = useState("#000000");
   const [dragging, setDragging] = useState(null);
-  const [mode, setMode] = useState("connect"); // "connect" or "select"
+  const [mode, setMode] = useState("connect");
+  const [selectedComponent, setSelectedComponent] = useState(null);
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(800, 600).parent(canvasParentRef);
@@ -19,22 +20,13 @@ const Breadboard = () => {
 
   const draw = (p5) => {
     p5.background(220);
-
-    // Draw the breadboard body.
     p5.fill(256);
     p5.rect(50, 50, 700, 500, 10);
-
-    // Draw power rails (upper & lower).
     drawPowerRails(p5, 80);
     drawPowerRails(p5, 480);
-
-    // Draw middle area with split.
     drawMiddleHolesWithSplit(p5);
-
-    // Draw finalized wires.
     drawWires(p5);
 
-    // If a wire is being drawn in connect mode, show a live preview.
     if (currentWire) {
       p5.stroke(currentWire.color);
       p5.strokeWeight(2);
@@ -46,50 +38,44 @@ const Breadboard = () => {
       );
     }
 
-    // Draw components.
     components.forEach((component) => {
+      if (selectedComponent === component.id) {
+        p5.stroke(255, 215, 0);
+        p5.strokeWeight(3);
+      } else {
+        p5.noStroke();
+      }
       if (component.type === "resistor") {
-        drawResistor(p5, component.x, component.y);
+        drawResistor(p5, component.x, component.y, component.rotated);
       } else if (component.type === "led") {
-        drawLED(p5, component.x, component.y);
+        drawLED(p5, component.x, component.y, component.rotated);
       }
     });
   };
 
-  // Draw the power rails using 5 groups per row (each group has 4 holes)
-  // with two rows (positive & negative) per rail.
   const drawPowerRails = (p5, yPosition) => {
     p5.strokeWeight(2);
-    // Draw the positive rail (red) and negative rail (black).
     p5.stroke(255, 0, 0);
     p5.line(70, yPosition, 730, yPosition);
     p5.stroke(0, 0, 0);
     p5.line(70, yPosition + 40, 730, yPosition + 40);
-
-    // Calculate layout:
-    // Total width: 660 (from x=70 to 730); 5 groups; 4 holes per group.
-    // Holes in each group span: (4 - 1) * 20 = 60px.
-    // Gaps: (660 - (5 * 60)) / 6 = 60px.
     const groups = 5;
     const holesPerGroup = 4;
-    const totalWidth = 660; // from x = 70 to 730
-    const groupWidth = (holesPerGroup - 1) * 20; // 60px per group
-    const gap = (totalWidth - groups * groupWidth) / (groups + 1); // 60px gap
+    const totalWidth = 660;
+    const groupWidth = (holesPerGroup - 1) * 20;
+    const gap = (totalWidth - groups * groupWidth) / (groups + 1);
 
     for (let group = 0; group < groups; group++) {
       const groupStartX = 70 + gap * (group + 1) + group * groupWidth;
       for (let hole = 0; hole < holesPerGroup; hole++) {
         const x = groupStartX + hole * 20;
         p5.fill(0);
-        // Positive rail row of holes.
         p5.ellipse(x, yPosition + 15, 5, 5);
-        // Negative rail row of holes.
         p5.ellipse(x, yPosition + 25, 5, 5);
       }
     }
   };
 
-  // Draw the middle breadboard area with two groups of holes and a central split.
   const drawMiddleHolesWithSplit = (p5) => {
     p5.fill(0);
     for (let col = 0; col < 34; col++) {
@@ -102,23 +88,59 @@ const Breadboard = () => {
     p5.rect(70, 280, 660, 40);
   };
 
-  const drawResistor = (p5, x, y) => {
+  const drawResistor = (p5, x, y, rotated) => {
     p5.fill(255, 120, 0);
-    p5.rect(x, y, 60, 20, 5);
-    p5.stroke(0);
-    p5.line(x - 10, y + 10, x, y + 10);
-    p5.line(x + 60, y + 10, x + 70, y + 10);
+    if (rotated) {
+      p5.rect(x, y, 20, 60, 5); // Rotate by changing width and height
+      p5.stroke(0);
+      p5.line(x + 10, y - 10, x + 10, y);
+      p5.line(x + 10, y + 60, x + 10, y + 70);
+    } else {
+      p5.rect(x, y, 60, 20, 5);
+      p5.stroke(0);
+      p5.line(x - 10, y + 10, x, y + 10);
+      p5.line(x + 60, y + 10, x + 70, y + 10);
+    }
   };
 
-  const drawLED = (p5, x, y) => {
-    p5.fill(255, 0, 0);
-    p5.ellipse(x, y, 20, 20);
-    p5.stroke(0);
-    p5.line(x + 5, y + 10, x + 5, y + 15);
-    p5.line(x + 5, y + 15, x + 15, y + 15);
-    p5.line(x + 15, y + 15, x + 15, y + 30);
-    p5.line(x - 5, y + 10, x - 5, y + 30);
-  };
+  const drawLED = (p5, x, y, rotated) => {
+    p5.fill(255, 0, 0); // LED color
+    if (rotated) {
+        // Draw the rounded top of the LED
+        p5.beginShape();
+        p5.vertex(x, y + 20); // Bottom left
+        p5.vertex(x + 20, y + 20); // Bottom right
+        p5.vertex(x + 25, y + 10); // Top right
+        p5.vertex(x + 25, y); // Top right
+        p5.vertex(x + 15, y); // Top left
+        p5.vertex(x+10, y + 5); // Bottom left
+        p5.vertex(x, y + 10); // Bottom left
+        p5.endShape(p5.CLOSE);
+    } else {
+        // Draw the rounded top of the LED
+        p5.beginShape();
+        p5.vertex(x, y); 
+        p5.vertex(x + 30, y); 
+        p5.vertex(x + 30, y - 10); // Bottom right
+        p5.vertex(x + 30, y-20); // Bottom left
+        p5.vertex(x + 25, y-25); // Bottom left
+        p5.vertex(x + 15, y-30); // Top left
+        p5.vertex(x+10, y-30); // Top left
+        p5.vertex(x+5, y-30); // Top left
+        p5.vertex(x, y-25); // Top left
+        p5.endShape(p5.CLOSE);
+    }
+
+    // Draw terminals, adjusting positions for straight leads
+    p5.fill(0); // Lead color
+    p5.rect(x+5, y, 3, 15); // Left terminal
+// Right terminal
+    p5.rect(x + 15, y, 3, 5);
+    p5.rect(x+15,y+4,10,3); // Right terminal
+    p5.rect(x+25,y+4,3,11); // Right terminal
+     // Right terminal
+     // Right terminal
+};
 
   const drawWires = (p5) => {
     wires.forEach((wire) => {
@@ -128,19 +150,14 @@ const Breadboard = () => {
     });
   };
 
-  // Returns the first valid hole if the mouse is within 10px.
   const detectHole = (p5) => {
     const holePositions = [];
-
-    // Middle breadboard holes.
     for (let col = 0; col < 34; col++) {
       for (let row = 0; row < 6; row++) {
         holePositions.push({ x: 70 + col * 20, y: 150 + row * 20 });
         holePositions.push({ x: 70 + col * 20, y: 350 + row * 20 });
       }
     }
-
-    // Power rails holes (for y-bases 80 and 480).
     [80, 480].forEach((base) => {
       const groups = 5;
       const holesPerGroup = 4;
@@ -162,7 +179,6 @@ const Breadboard = () => {
     );
   };
 
-  // Handle mousePressed differently based on mode.
   const mousePressed = (p5) => {
     if (mode === "connect") {
       const hole = detectHole(p5);
@@ -170,7 +186,6 @@ const Breadboard = () => {
         setCurrentWire({ start: hole, color: selectedColor });
       }
     } else if (mode === "select") {
-      // Check if a component was clicked.
       for (let comp of components) {
         if (
           p5.mouseX > comp.x - 20 &&
@@ -178,14 +193,16 @@ const Breadboard = () => {
           p5.mouseY > comp.y - 20 &&
           p5.mouseY < comp.y + 40
         ) {
+          setSelectedComponent(comp.id);
           setDragging(comp.id);
-          break;
+          return;
         }
       }
+      setDragging(null);
+      setSelectedComponent(null);
     }
   };
 
-  // Allow dragging of components only in select mode.
   const mouseDragged = (p5) => {
     if (mode === "select" && dragging !== null) {
       setComponents((prevComponents) =>
@@ -198,7 +215,6 @@ const Breadboard = () => {
     }
   };
 
-  // On mouseReleased, finish the current action based on mode.
   const mouseReleased = (p5) => {
     if (mode === "connect") {
       if (currentWire) {
@@ -216,6 +232,27 @@ const Breadboard = () => {
     }
   };
 
+  const rotateSelected = () => {
+    if (selectedComponent) {
+      setComponents((prevComponents) =>
+        prevComponents.map((comp) =>
+          comp.id === selectedComponent
+            ? { ...comp, rotated: !comp.rotated }
+            : comp
+        )
+      );
+    }
+  };
+
+  const deleteSelected = () => {
+    if (selectedComponent) {
+      setComponents((prevComponents) =>
+        prevComponents.filter((comp) => comp.id !== selectedComponent)
+      );
+      setSelectedComponent(null);
+    }
+  };
+
   return (
     <div>
       <div style={{ marginBottom: "10px" }}>
@@ -229,6 +266,12 @@ const Breadboard = () => {
         </button>
         <button onClick={() => setMode("connect")} style={{ marginLeft: "10px" }}>
           Connect Mode
+        </button>
+        <button onClick={rotateSelected} disabled={!selectedComponent} style={{ marginLeft: "10px" }}>
+          Rotate
+        </button>
+        <button onClick={deleteSelected} disabled={!selectedComponent} style={{ marginLeft: "10px" }}>
+          Delete
         </button>
         <span style={{ marginLeft: "10px" }}>
           Current Mode: {mode.charAt(0).toUpperCase() + mode.slice(1)}
