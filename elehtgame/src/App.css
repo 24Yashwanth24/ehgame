@@ -6,7 +6,7 @@
   background-color: #222;
   padding: 20px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x:auto;
 }
 
 /* Stopwatch Box (fixed at top right) */

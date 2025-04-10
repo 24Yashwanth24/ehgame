@@ -25,7 +25,7 @@ function generateLevels(n) {
 function getCurvedPath(points) {
   if (points.length < 2) return "";
 
-  const curveFactor = 1 / 3;
+  const curveFactor = 1 / 20;
   let d = `M ${points[0].x + 20} ${points[0].y + 20}`;
 
   for (let i = 0; i < points.length - 1; i++) {
@@ -86,16 +86,16 @@ function App() {
   
   // Hard-coded questions (one question per level)
   const questions = [
-    { question: "What is 2+2?", answer: "4" },
-    { question: "What color do you get when you mix red and blue?", answer: "purple" },
-    { question: "What is the capital of France?", answer: "paris" },
-    { question: "In computing, what does 'CPU' stand for?", answer: "central processing unit" },
-    { question: "What is the boiling point of water in Celsius?", answer: "100" },
-    { question: "Who wrote 'Romeo and Juliet'?", answer: "shakespeare" },
-    { question: "What is the largest planet in our Solar System?", answer: "jupiter" },
-    { question: "What is the chemical symbol for gold?", answer: "au" },
-    { question: "What year did World War II end?", answer: "1945" },
-    { question: "Which element has the atomic number 6?", answer: "carbon" },
+    { question: "Decode the following Resistor code Brown-Black-Black-Red-Gold (in kiloohms)", answer: "10" },
+    { question: "Tell the ceramic capacitor value 104 (in nF) ", answer: "100" },
+    { question: "What's 10110101 in decimal ?", answer: "181" },
+    { question: "cut-in voltage for germanium diode ?", answer: "0.3" },
+    { question: "which is a voltage controlled device bjt or fet?", answer: "fet" },
+    { question: "The pwer rails in breadboard are connected: horizontal OR vertical  ?", answer: "horizontal" },
+    { question: "Full form of VLSI ?", answer: "very large scale integration" },
+    { question: "What is the current flowing through a 5k ohm resistor when it is connected to a 10V voltage source (in mA)?", answer: "2" },
+    { question: "I have to buy an inductor of value 47 micro,but what are its units ?", answer: "henry" },
+    { question: "what is the logic gate in the tick-tack pen?", answer: "xor" },
   ];
   
   // Reference to container for full-screen requests
@@ -176,6 +176,8 @@ function App() {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, [gameStarted]);
+  
+
   
   // When all levels are cleared, record the total time.
   const completeGame = () => {

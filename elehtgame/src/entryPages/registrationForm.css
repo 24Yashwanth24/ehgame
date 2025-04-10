@@ -1,0 +1,80 @@
+/* Registration Form Styles */
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #5bcb11, #2575fc); /* Gradient background */
+    position: relative;
+    overflow: hidden;
+    padding: 20px; /* Add padding to the form */
+    box-sizing: border-box; /* Include padding in width calculations */
+  }
+  
+  /* Background Animation */
+  .registration-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-image: url('path/to/your/background-image.png'); Replace with your image path */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1; /* Adjust opacity for subtle effect */
+    animation: moveBackground 10s linear infinite; /* Animation for background */
+    z-index: 0; /* Behind the form */
+  }
+  
+  @keyframes moveBackground {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+  
+  .registration-form h1 {
+    color: white;
+    margin-bottom: 20px;
+    z-index: 1; /* Bring text above background */
+  }
+  
+  .registration-form form {
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Bring form above background */
+    width: 100%; /* Make form take full width */
+    max-width: 400px; /* Set a maximum width for the form */
+  }
+  
+  .registration-form input,
+  .registration-form select {
+    width: 100%; /* Full width of the form */
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Include padding and border in width */
+  }
+  
+  .registration-form button {
+    background-color: #c5415a; /* Button color */
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .registration-form button:hover {
+    background-color: #6cbbb3; /* Change color on hover */
+  }
